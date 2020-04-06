@@ -103,6 +103,7 @@ function getHtmlData(html) {
 
     });
 }
-const server = app.listen(80, function () {
-    console.log('COVID-19 server count started');
+const port = process.env.PORT || 80;
+const server = app.listen(port, function () {
+    console.log('COVID-19 server count started ' + port);
 });
