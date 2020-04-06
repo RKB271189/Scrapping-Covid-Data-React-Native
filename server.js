@@ -6,7 +6,9 @@ const app = express();
 
 const url = "https://www.worldometers.info/coronavirus/";
 
-
+app.get('/',(req,res)=>{
+    res.send("Covid Count Started");
+});
 app.post('/covid-count', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     let data = {
