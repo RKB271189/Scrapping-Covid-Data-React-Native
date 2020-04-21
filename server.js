@@ -61,8 +61,7 @@ async function getLocalCount(html) {
             total: total_confirmedcases,
             cured: total_cured,
             death:total_death
-        }
-        console.log(details);
+        }        
         resolve(details);
     }).catch(function (error) {
         console.log(error);
