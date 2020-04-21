@@ -5,10 +5,69 @@ const app = express();
 
 
 const url = "https://www.worldometers.info/coronavirus/";
-
+const url1 = "https://www.mygov.in/corona-data/covid19-statewise-status/";
 app.get('/',(req,res)=>{
     res.send("Covid Count Started");
 });
+app.post('/local-count', (req, res) => {
+    //res.end("Covid Count Started");
+    res.setHeader('Content-Type', 'application/json');
+    let data = {
+        result: false,
+        details: '',
+        error: ''
+    }
+    axios.get(url1).then(async function (response) {
+        await getLocalCount(response.data).then(function (results) {
+            if (typeof results == String) {
+                if (results.includes("Error")) {
+                    data.error = results;
+                    res.json(data);
+                }
+            }
+            data.result = true;
+            data.details = results;
+            res.json(data);
+        });
+    })
+});
+async function getLocalCount(html) {
+    return new Promise(function (resolve, reject) {
+        let details = {
+            cstate: '',
+            total: '',
+            cured: '',
+            death: ''
+        }
+        let total_confirmedcases = [];
+        let india_state = [];
+        let total_cured = [];
+        let total_death = [];
+        const $ = cheerio.load(html);
+        $('.content .field-name-field-total-confirmed-indians .field-items .even').each(function () {
+            total_confirmedcases.push($(this).text().trim());
+        });
+        $('.content .field-name-field-select-state .field-items .even').each(function () {
+            india_state.push($(this).text().trim());
+        });
+        $('.content .field-name-field-cured .field-items .even').each(function () {
+            total_cured.push($(this).text().trim());
+        });
+        $('.content .field-name-field-deaths .field-items .even').each(function () {
+            total_death.push($(this).text().trim());
+        });
+        details = {
+            cstate: india_state,
+            total: total_confirmedcases,
+            cured: total_cured,
+            death:total_death
+        }
+        console.log(details);
+        resolve(details);
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
 app.post('/covid-count', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     let data = {
